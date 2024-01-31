@@ -23,8 +23,12 @@ app.use(
   })
 );
 
+const landingRoutes = require("./routes/landing.js")
+
 async function main() {
-  
+  app.use("/", landingRoutes)
+
+
 }
 
 main();
