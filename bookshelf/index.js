@@ -2,8 +2,8 @@ const knex = require("knex")({
     client: "mysql",
     connection: {
         user: "foo",
-        password: "bar",
-        database: "organic",
+        password: "bar", 
+        database: "organic", // Using the organic database
         host: "127.0.0.1"
     }
 })

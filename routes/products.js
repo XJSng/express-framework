@@ -1,8 +1,9 @@
 const express = require('express');
+const router = express.Router();
+
 const { Product } = require('../models');
 const { createProductForm, bootstrapField } = require('../forms');
 
-const router = express.Router();
 
 router.get('/', async function (req, res) {
     // Same as SELECT * FROM products
