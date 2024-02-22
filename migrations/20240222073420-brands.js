@@ -14,8 +14,22 @@ exports.setup = function(options, seedLink) {
   seed = seedLink;
 };
 
+// Brand Tables a quite special as it serves as a placeholder in connecting foreign keys
+// This is important because foreign keys cannot be null when they are created for existing tables.
 exports.up = function(db) {
-  return null;
+  return db.createTable("brands", {
+    "id": {
+      "type": "int",
+      "primaryKey": true,
+      "autoIncrement": true,
+      "unsigned":true
+    },
+    "name": {
+      "type": "string",
+      "length": 100,
+      "notNull":true
+    }
+  })
 };
 
 exports.down = function(db) {
