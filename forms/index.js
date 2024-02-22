@@ -1,8 +1,9 @@
-//import in caolan forms
+// THIS IS CAOLAN FORMS IMPORTED WITH THE bootstrapField code and EXPORTED
 const forms = require('forms');
 // create some shortcuts
 const fields = forms.fields;
 const validators = forms.validators;
+const widgets = forms.widgets
 
 
 const bootstrapField = function (name, object) {
@@ -26,7 +27,7 @@ const bootstrapField = function (name, object) {
 };
 
 
-const createProductForm = () => {
+const createProductForm = (categories) => {
     // forms.create takes in one argument
     // it is an object that defines the form
     // the key will be the `name` of each form field
@@ -34,16 +35,35 @@ const createProductForm = () => {
     return forms.create({   
         name: fields.string({
             required: true,
-            errorAfterField: true
+            errorAfterField: true,
+            cssClasses: {
+                label:['form-label']
+            }
         }),
         cost:fields.string({
             required: true,
             errorAfterField: true,
+            cssClasses: {
+                label:['form-label']
+            },
             validators: [validators.integer()]
         }),
         description: fields.string({
             required: true,
-            errorAfterField: true
+            errorAfterField: true,
+            cssClasses: {
+                label:['form-label']
+            }
+        }),
+        category_id:fields.string({
+            label: 'Category',
+            require: true,
+            errorAfterField:true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget:widgets.select(),
+            choices:categories
         })
     })
 }
