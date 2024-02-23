@@ -4,6 +4,8 @@ const Product = bookshelf.model("Product", {
     tableName: "products",
     category(){
         return this.belongsTo("Category")
+    }, tags() {
+        return this.belongsToMany("Tag")
     }
 })
 
@@ -14,5 +16,11 @@ const Category = bookshelf.model("Category", {
     }
 })
 
+const Tag = bookshelf.model("Tag", {
+    tableName: "tags",
+    products() {
+        return this.belongsToMany("Product")
+    }
+})
 //Export the model
-module.exports = {Product, Category}
+module.exports = {Product, Category, Tag}

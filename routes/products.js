@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { Product, Category } = require('../models');
+const { Product, Category, Tag } = require('../models');
 const { createProductForm, bootstrapField } = require('../forms');
 
 
@@ -21,8 +21,10 @@ router.get('/create', async function (req, res) {
     const allCategories = await Category.fetchAll().map((category) => {
         return[category.get('id'), category.get("name")]
     })
+    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"),
+tag.get("name")])
 
-    const productForm = createProductForm(allCategories);
+    const productForm = createProductForm(allCategories, allTags);
     res.render('products/create', {
         form: productForm.toHTML(bootstrapField)
     })
