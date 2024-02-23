@@ -27,7 +27,7 @@ const bootstrapField = function (name, object) {
 };
 
 
-const createProductForm = (categories,tags) => {
+const createProductForm = (categories =[],tags = []) => {
     // forms.create takes in one argument
     // it is an object that defines the form
     // the key will be the `name` of each form field
@@ -68,9 +68,6 @@ const createProductForm = (categories,tags) => {
         tags: fields.string({
             required: true,
             errorAfterField: true,
-            cssClasses: {
-                label:[ "form-label"]
-            },
             widget: widgets.multipleSelect(),
             choices:tags
         })

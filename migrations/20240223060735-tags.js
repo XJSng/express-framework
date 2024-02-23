@@ -23,7 +23,8 @@ exports.up = function (db) {
       unsigned: true
     }, name: {
       type: "string",
-      length: 100
+      length: 100,
+      notNull:true
     }
   });
 };

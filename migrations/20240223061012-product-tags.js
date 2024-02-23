@@ -43,18 +43,19 @@ exports.up = function (db) {
       foreignKey: {
         name: "products_tags_tag_fk",
         table: "tags",
+        mapping: "id",
         rules: {
           onDelete: "CASCADE",
           onUpdate: "RESTRICT"
         },
-        mapping: "id"
+   
       }
     }
   });
 };
 
 exports.down = function (db) {
-  return null;
+  return db.dropTable("products_tags");
 };
 
 exports._meta = {
