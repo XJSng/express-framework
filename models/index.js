@@ -11,7 +11,7 @@ const Product = bookshelf.model("Product", {
 
 const Category = bookshelf.model("Category", {
     tableName: "categories",
-    product(){
+    products(){
         return this.hasMany("Product")
     }
 })

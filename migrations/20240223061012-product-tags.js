@@ -47,7 +47,7 @@ exports.up = function (db) {
         rules: {
           onDelete: "CASCADE",
           onUpdate: "RESTRICT"
-        },
+        }
    
       }
     }

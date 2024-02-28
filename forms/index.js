@@ -27,7 +27,7 @@ const bootstrapField = function (name, object) {
 };
 
 
-const createProductForm = (categories =[],tags = []) => {
+const createProductForm = (categories = [],tags = []) => {
     // forms.create takes in one argument
     // it is an object that defines the form
     // the key will be the `name` of each form field

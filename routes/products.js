@@ -6,6 +6,7 @@ const { createProductForm, bootstrapField } = require('../forms');
 
 
 router.get('/', async function (req, res) {
+   
     // Same as SELECT * FROM products
     let products = await Product.collection().fetch({
         withRelated: ["category", "tags"]
@@ -88,33 +89,38 @@ router.post('/create', async function (req, res) {
 })
 
 router.get("/:product_id/update", async (req, res) => {
-    const product = await Product.where({
-        "id": req.params.product_id
-    }).fetch({
-        require: true, // if no such product is found, throw an exception
-        withRelated: ["tags"]
-    })
+    try {
+        const product = await Product.where({
+            "id": req.params.product_id
+        }).fetch({
+            require: true, // if no such product is found, throw an exception
+            withRelated: ["tags"]
+        })
 
-    // fetch all the categories
-    const allCategories = await Category.fetchAll().map((category) => {
-        return [category.get('id'), category.get('name')];
-    })
-    const allTags = await Tag.fetchAll().map((tag) => {
-        return [tag.get('id'), tag.get('name')];
-    })
+        // fetch all the categories
+        const allCategories = await Category.fetchAll().map((category) => {
+            return [category.get('id'), category.get('name')];
+        })
+        const allTags = await Tag.fetchAll().map((tag) => {
+            return [tag.get('id'), tag.get('name')];
+        })
 
-    const productForm = createProductForm(allCategories, allTags);
-    productForm.fields.name.value = product.get('name')
-    productForm.fields.cost.value = product.get('cost')
-    productForm.fields.description.value = product.get('description')
-    productForm.fields.category_id.value = product.get('category_id')
+        const productForm = createProductForm(allCategories, allTags);
+        productForm.fields.name.value = product.get('name')
+        productForm.fields.cost.value = product.get('cost')
+        productForm.fields.description.value = product.get('description')
+        productForm.fields.category_id.value = product.get('category_id')
 
-    // Fill in the multi-select for the tags
-    let selectTags = await product.related("tags").pluck("id");
-    productForm.fields.tags.value = selectTags
-    res.render("products/update", {
-        form: productForm.toHTML(bootstrapField)
-    })
+        // Fill in the multi-select for the tags
+        let selectedTags = await product.related("tags").pluck("id");
+        productForm.fields.tags.value = selectedTags
+        res.render("products/update", {
+            form: productForm.toHTML(bootstrapField)
+        })
+    } catch (error) {
+        console.error("Error fetching product", error)
+        res.status(404).json({ error: "Product not found" })
+    }
 })
 
 router.post('/:product_id/update', async function (req, res) {
@@ -139,7 +145,7 @@ router.post('/:product_id/update', async function (req, res) {
             // product.set('cost', form.data.cost);
             // product.set('description', form.data.description);
             //This retrieves the selected tags and product data from the form.
-            let {tags, ...productData} = form.data
+            let { tags, ...productData } = form.data
             product.set(productData);
             await product.save();
 
@@ -151,7 +157,7 @@ router.post('/:product_id/update', async function (req, res) {
             let toRemove = existingTagIds.filter(id => tagIds.includes(id) === false)
             await product.tags().detach(toRemove)
 
-            // Add in all the tags select in the form
+            // Add in all the tags selected in the form
             await product.tags().attach(tagIds)
             res.redirect('/products');
         },
@@ -170,26 +176,38 @@ router.post('/:product_id/update', async function (req, res) {
 
 
 router.get('/:product_id/delete', async function (req, res) {
-    // get the product that we want to update
-    const product = await Product.where({
-        'id': req.params.product_id
-    }).fetch({
-        require: true // if no such product is found, throw an exception
-    });
+    try {
+        // get the product that we want to update
+        const product = await Product.where({
+            'id': req.params.product_id
+        }).fetch({
+            require: true
+        });
 
-    res.render('products/delete', {
-        'product': product.toJSON()
-    })
+        res.render('products/delete', {
+            'product': product.toJSON()
+        })
+    } catch (error) {
+        // if no such product is found, throw an exception
+        console.error("Error fetching product", error)
+        res.status(404).json({ error: "Product not found" })
+    }
 })
 
 router.post('/:product_id/delete', async function (req, res) {
-    const product = await Product.where({
-        'id': req.params.product_id
-    }).fetch({
-        require: true // if no such product is found, throw an exception
-    });
-    await product.destroy();
-    res.redirect('/products');
+    try {
+        const product = await Product.where({
+            'id': req.params.product_id
+        }).fetch({
+            require: true // if no such product is found, throw an exception
+        });
+        await product.destroy();
+        res.redirect('/products');
+    } catch (error) {
+        // if no such product is found, throw an exception
+        console.error("Error fetching product", error)
+        res.status(404).json({ error: "Product not found" })
+    }
 })
 
 module.exports = router;
