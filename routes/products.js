@@ -6,7 +6,7 @@ const { createProductForm, bootstrapField } = require('../forms');
 
 
 router.get('/', async function (req, res) {
-   
+
     // Same as SELECT * FROM products
     let products = await Product.collection().fetch({
         withRelated: ["category", "tags"]
@@ -60,7 +60,7 @@ router.post('/create', async function (req, res) {
             product.set('description', form.data.description);
             product.set('category_id', form.data.category_id)
 
-            // save
+            // save product
             await product.save();
             let tags = form.data.tags
             // the tags will be in comma delimited form
@@ -71,7 +71,9 @@ router.post('/create', async function (req, res) {
                 // In this case, we are attach IDs to product's tags
                 await product.tags().attach(tags.split(","))
             }
-
+                // IMPORTANT for a Flash message to work, It must be used before a redirect,
+                // if not, it will show up at the wrong time
+            req.flash("success_messages", "New product has been added!") // req.session.messages.success_messages = ["New Product has been added!"]
             res.redirect('/products');
 
         },
@@ -202,11 +204,14 @@ router.post('/:product_id/delete', async function (req, res) {
             require: true // if no such product is found, throw an exception
         });
         await product.destroy();
+        req.flash("success_messages", "Product has been deleted")
         res.redirect('/products');
     } catch (error) {
         // if no such product is found, throw an exception
         console.error("Error fetching product", error)
         res.status(404).json({ error: "Product not found" })
+        
+
     }
 })
 
