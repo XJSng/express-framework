@@ -64,7 +64,7 @@ router.post("/login", (req, res) => {
                 // check the password
                 if (await bcrypt.compare(form.data.password, user.get("password"))) { // The hash MUST Be the second argument
                     // if true, then user is verified
-                    // let's record the user's logi to sessions
+                    // let's record the user's login to sessions
                     req.session.userId = user.get("id")
                     res.redirect("/users/profile")
                 } else {
@@ -75,19 +75,30 @@ router.post("/login", (req, res) => {
                 req.flash("error_messages", "Unable to log in, please try again")
                 res.redirect("/users/login")
             }
+        },
+        "error": function (form) {
+            res.render("users/login", {
+                form: form.toHTML(bootstrapField)
+            })
+        },
+        "empty": function (form) {
+            res.render("users/login", {
+                form: form.toHTML(bootstrapField)
+            })
         }
     })
 })
 
-router.get("/profile", [loggedIn], async (req, res)=>{
-    const user = await User.where({
-        id: req.session.userId
-    }).fetch({
-        required:true
-    })
+router.get("/profile", [loggedIn], async (req, res) => {
     res.render("users/profile", {
-        user:user.toJSON()
+        user: req.session.user
     })
+})
+
+router.get("/logout", [loggedIn], async (req, res) => {
+    req.session.userId = null;
+    req.flash("success_messages", "You have been successfully logged out.")
+    res.redirect("/users/login")
 })
 
 module.exports = router
