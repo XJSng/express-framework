@@ -52,17 +52,18 @@ app.use(function (req, res, next) {
 // enable routes
 const landingRoutes = require("./routes/landing.js")
 const productRoutes = require("./routes/products.js")
+const userRoute = require("./routes/users.js")
 
 async function main() {
   app.use("/", landingRoutes)
   app.use("/products", productRoutes)
-  
+  app.use("/users", userRoute)
 
 }
 
 main();
 
-app.listen(3000, () => {
+app.listen(4000, () => {
   console.log("Server has started");
 });
 

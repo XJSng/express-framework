@@ -1,0 +1,12 @@
+{{#extends "base"}}
+
+{{#block "title"}}User Profile{{/block}}
+{{#block "content"}}
+<h3 class="mt-3 mb-3">User Profile</h3>
+<ul>
+    <li>Username: <span class="badge bg-primary">{{user.username}}</span></li>
+    <li>Email: <span class="badge bg-secondary">{{user.email}}</span></li>
+</ul>
+{{/block}}
+
+{{/extends}}

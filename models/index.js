@@ -22,5 +22,11 @@ const Tag = bookshelf.model("Tag", {
         return this.belongsToMany("Product")
     }
 })
+
+// User model
+const User = bookshelf.model("User", {
+    tableName: "users"
+})
+
 //Export the model
-module.exports = {Product, Category, Tag}
+module.exports = {Product, Category, Tag, User}
