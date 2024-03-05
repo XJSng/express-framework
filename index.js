@@ -2,6 +2,7 @@ const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
 require("dotenv").config();
+const csurf = require("csurf")
 
 // import dependecies for sessions
 const session = require("express-session")
@@ -31,23 +32,42 @@ app.use(
 
 //enable sessions
 app.use(session({
-store: new FileStore,
-secret: "keyboard cat",
-resave: false, // if a browser send a request and there is a valid session Id
-saveUninitialized: true // if the browser does not have a session, we will create one for the browser
+  store: new FileStore,
+  secret: "keyboard cat",
+  resave: false, // if a browser send a request and there is a valid session Id
+  saveUninitialized: true // if the browser does not have a session, we will create one for the browser
 }))
 
 // enable flash messaging
 app.use(flash());
 
 app.use(function (req, res, next) {
-	// res.locals contains all the variable of the success message
-	// The hbs files have access this forcefully added variable
-    
-	res.locals.success_messages = req.flash("success_messages");
-    res.locals.error_messages = req.flash("error_messages");
-    next();
+  // res.locals contains all the variable of the success message
+  // The hbs files have access this forcefully added variable
+
+  res.locals.success_messages = req.flash("success_messages");
+  res.locals.error_messages = req.flash("error_messages");
+  next();
 });
+
+// enable CSURF
+app.use(csurf())
+
+// Make csurf token available in all HBS files
+app.use(function (req, res, next) {
+  res.locals.csrfToken = req.csrfToken()
+  next()
+})
+
+// Error handling in csrf middleware
+app.use(function (err, req, res, next) {
+  if (err && err.code == "EBADCSRFTOKEN") {
+    req.flash("error_messages", "The form has expired")
+    res.redirect("back") // same as pressing the BACK button on the 
+  } else {
+    next()
+  }
+})
 
 // enable routes
 const landingRoutes = require("./routes/landing.js")

@@ -97,6 +97,7 @@ router.get("/profile", [loggedIn], async (req, res) => {
 
 router.get("/logout", [loggedIn], async (req, res) => {
     req.session.userId = null;
+    req.session.user= null
     req.flash("success_messages", "You have been successfully logged out.")
     res.redirect("/users/login")
 })
