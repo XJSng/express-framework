@@ -8,6 +8,7 @@ Delete Product
     <div class="alert alert-danger">
         <p>Are you sure you want to delete product: {{product.name}}?</p>
         <a href="/products" class="btn btn-danger">No</a>
+           <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="submit" class="btn btn-success" value="Yes"/>
     </div>
 </form>

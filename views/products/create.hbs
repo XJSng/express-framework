@@ -4,13 +4,15 @@
 <form method="POST">
     {{{form}}}
     {{!-- Using triple curly braces is important --}}
-       <div>
+    <div>
         <button id="upload_widget" class="btn btn-success mt-3">
             Upload
         </button>
+        <img src="#" class="mt-3 img-fluid" style="display:none" id="uploaded_image">
     </div>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <input type="submit" class="btn btn-primary mt-3" />
- 
+
 </form>
 {{/block}}
 
@@ -27,7 +29,7 @@
         axios.get("/cloudinary/sign", {
             params: {
                 "params_to_sign": params_to_sign
-                }
+            }
         }).then(function (response) {
             callback(response.data)
         })
@@ -36,23 +38,28 @@
     const cloudinaryName = "{{cloudinaryName}}"
     const cloudinaryApiKey = "{{cloudinaryApiKey}}"
     const cloudinaryPreset = "{{cloudinaryPreset}}"
-   
-   // create the widget
-   const myWidget = cloudinary.createUploadWidget({
-    cloudName: cloudinaryName,
-    apiKey: cloudinaryApiKey,
-    uploadPreset: cloudinaryPreset,
-    uploadSignature: generateSignature
-   }, function(err, result){
-    console.log(err)
-    console.log(result)
-   }) 
 
-   document.querySelector("#upload_widget")
-   .addEventListener("click", function(e){
-    e.preventDefault();
-    myWidget.open()
-   })
+    // create the widget
+    const myWidget = cloudinary.createUploadWidget({
+        cloudName: cloudinaryName,
+        apiKey: cloudinaryApiKey,
+        uploadPreset: cloudinaryPreset,
+        uploadSignature: generateSignature
+    }, function (err, result) {
+        if (!err && result && result.event == "success") {
+            console.log(result)
+            const imageUrl = result.info.url;
+            document.querySelector("#id_image_url").value = imageUrl
+            document.querySelector("#uploaded_image").src = imageUrl;
+            document.querySelector("#uploaded_image").style.display = "block";
+        }
+    })
+
+    document.querySelector("#upload_widget")
+        .addEventListener("click", function (e) {
+            e.preventDefault();
+            myWidget.open()
+        })
 </script>
 {{/block}}
 
