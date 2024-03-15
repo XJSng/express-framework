@@ -2,17 +2,75 @@ const express = require('express');
 const router = express.Router();
 
 const { Product, Category, Tag } = require('../models');
-const { createProductForm, bootstrapField } = require('../forms');
+const { createProductForm, bootstrapField, createSearchForm } = require('../forms');
 
 
 router.get('/', async function (req, res) {
+    const allCategories = await Category.fetchAll().map((category) => {
+        return [category.get('id'), category.get("name")]
+    })
+    // Added a new category to the array, in the front,
+    // allowing users to not search for anything
+    allCategories.unshift([0, "--------"])
+    
 
-    // Same as SELECT * FROM products
-    let products = await Product.collection().fetch({
-        withRelated: ["category", "tags"]
-    }); // bookshelf syntax
-    res.render("products/index", {
-        products: products.toJSON()
+    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"),
+    tag.get("name")])
+
+    const searchForm = createSearchForm(allCategories, allTags)
+    searchForm.handle(req, {
+        "success": async form => {
+            const q = Product.collection() // nothing is fetched yet
+            if (form.data.name) {
+                q.where("name", "like", `%${form.data.name}%`)
+            }
+
+            if (form.data.min_cost) {
+                q.where("cost", ">=", `%${parseInt(form.data.min_cost)}%`)
+            }
+
+            if (form.data.max_cost) {
+                q.where("cost", "<=", `%${parseInt(form.data.max_cost)}%`)
+            }
+
+            // Check if the form.data.category_id exists in the form
+            // and make sure it doesn't contain string "0"
+            // all values from a <select> are sent as string
+            if (form.data.category_id && form.data.category_id != "0") {
+                q.where("category_id", "=", parseInt(form.data.category_id))
+            }
+
+            if (form.data.tags) {
+                q.query("join", "products_tags", "products.id", "product_id")
+                .where("tag_id","in", form.data.tags.split(","));
+            }
+
+            const products = await q.fetch({
+                withRelated:["category", "tags"]
+            })
+            res.render("products/index", {
+                products: products.toJSON(),
+                form: form.toHTML(bootstrapField)
+            })
+        },
+        "error": async form => {
+            let products = await Product.collection().fetch({
+                withRelated: ["category", "tags"]
+            });
+            res.render("products/index", {
+                products: products.toJSON(),
+                form: searchForm.toHTML(bootstrapField)
+            })
+        },
+        "empty": async form => {
+            let products = await Product.collection().fetch({
+                withRelated: ["category", "tags"]
+            });
+            res.render("products/index", {
+                products: products.toJSON(),
+                form: searchForm.toHTML(bootstrapField)
+            })
+        }
     })
 })
 
@@ -75,8 +133,8 @@ router.post('/create', async function (req, res) {
                 // In this case, we are attach IDs to product's tags
                 await product.tags().attach(tags.split(","))
             }
-                // IMPORTANT for a Flash message to work, It must be used before a redirect,
-                // if not, it will show up at the wrong time
+            // IMPORTANT for a Flash message to work, It must be used before a redirect,
+            // if not, it will show up at the wrong time
             req.flash("success_messages", "New product has been added!") // req.session.messages.success_messages = ["New Product has been added!"]
             res.redirect('/products');
 
@@ -128,11 +186,11 @@ router.get("/:product_id/update", async (req, res) => {
         productForm.fields.tags.value = selectedTags
         res.render("products/update", {
             form: productForm.toHTML(bootstrapField),
-            product:product.toJSON(),
+            product: product.toJSON(),
             // Import cloudinary dependencies
-        cloudinaryName: process.env.CLOUDINARY_NAME,
-        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
-        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
+            cloudinaryName: process.env.CLOUDINARY_NAME,
+            cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+            cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
         })
     } catch (error) {
         console.error("Error fetching product", error)
@@ -230,7 +288,7 @@ router.post('/:product_id/delete', async function (req, res) {
         // if no such product is found, throw an exception
         console.error("Error fetching product", error)
         res.status(404).json({ error: "Product not found" })
-        
+
 
     }
 })
