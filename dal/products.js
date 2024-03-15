@@ -1,5 +1,9 @@
 const { Tag, Category, Product } = require("../models");
 
+async function getAllProducts(){
+    return await Product.fetchAll()
+}
+
 async function getAllTags() {
     const tags = await Tag
         .fetchAll()
@@ -47,5 +51,6 @@ module.exports = {
     getAllTags,
     getAllCategories,
     getProductById,
-    createProduct
+    createProduct,
+    getAllProducts
 }

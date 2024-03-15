@@ -51,12 +51,14 @@ app.use(function (req, res, next) {
 });
 
 // enable CSURF
-app.use(csurf())
-
+// app.use(csurf())
+const csurfInstance = csurf()
 // Make csurf token available in all HBS files
 app.use(function (req, res, next) {
-  res.locals.csrfToken = req.csrfToken()
-  next()
+  if (req.url == "/checkout/process_payment" || req.url.slice(0, 5) == "/api/") {
+    return next()
+  }
+  csurfInstance(req, res, next)
 })
 
 // Error handling in csrf middleware
@@ -75,17 +77,20 @@ const productRoutes = require("./routes/products.js")
 const userRoute = require("./routes/users.js")
 const cloudinaryRoutes = require("./routes/cloudinary.js")
 
+const api = { products: require("./routes/api/products.js") }
+
 async function main() {
   app.use("/", landingRoutes)
   app.use("/products", productRoutes)
   app.use("/users", userRoute)
   app.use("/cloudinary", cloudinaryRoutes)
 
+  app.use("/api/products", api.products)
 }
 
 main();
 
-app.listen(5000, () => {
+app.listen(2000, () => {
   console.log("Server has started");
 });
 
