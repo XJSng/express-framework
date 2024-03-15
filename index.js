@@ -3,6 +3,8 @@ const hbs = require("hbs");
 const wax = require("wax-on");
 require("dotenv").config();
 const csurf = require("csurf")
+const cors = require("cors")
+app.use(cors())
 
 // import dependecies for sessions
 const session = require("express-session")
@@ -84,8 +86,8 @@ async function main() {
   app.use("/products", productRoutes)
   app.use("/users", userRoute)
   app.use("/cloudinary", cloudinaryRoutes)
-
-  app.use("/api/products", api.products)
+  // all routes are json
+  app.use("/api/products", express.json(), api.products)
 }
 
 main();
