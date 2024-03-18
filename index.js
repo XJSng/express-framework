@@ -4,7 +4,7 @@ const wax = require("wax-on");
 require("dotenv").config();
 const csurf = require("csurf")
 const cors = require("cors")
-app.use(cors())
+
 
 // import dependecies for sessions
 const session = require("express-session")
@@ -14,6 +14,7 @@ const FileStore = require("session-file-store")(session)
 
 // create an instance of express app
 let app = express();
+app.use(cors())
 
 // set the view engine
 app.set("view engine", "hbs");
