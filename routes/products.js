@@ -4,17 +4,16 @@ const router = express.Router();
 const { Product} = require('../models');
 const { createProductForm, bootstrapField, createSearchForm } = require('../forms');
 const { getAllTags, getAllCategories, getProductById, createProduct } = require('../dal/products');
+const { getProducts } = require('../service_layer/products');
 
 
 router.get('/', async function (req, res) {
-    const allCategories = await getAllCategories()
+      const allCategories = await getAllCategories()
     // Added a new category to the array, in the front,
     // allowing users to not search for anything
-    allCategories.unshift([0, "--------"])
-    
-
+    allCategories.unshift([0, "All Categories"])
     const allTags = await getAllTags()
-
+    allTags.unshift([0, "Any Tags"])
     const searchForm = createSearchForm(allCategories, allTags)
     searchForm.handle(req, {
         "success": async form => {
@@ -24,11 +23,11 @@ router.get('/', async function (req, res) {
             }
 
             if (form.data.min_cost) {
-                q.where("cost", ">=", `%${parseInt(form.data.min_cost)}%`)
+                q.where("cost", ">=", `${form.data.min_cost}`)
             }
 
             if (form.data.max_cost) {
-                q.where("cost", "<=", `%${parseInt(form.data.max_cost)}%`)
+                q.where("cost", "<=", `${form.data.max_cost}`)
             }
 
             // Check if the form.data.category_id exists in the form
@@ -38,11 +37,11 @@ router.get('/', async function (req, res) {
                 q.where("category_id", "=", parseInt(form.data.category_id))
             }
 
-            if (form.data.tags) {
+            if (form.data.tags && form.data.tags != "0") {
                 q.query("join", "products_tags", "products.id", "product_id")
                 .where("tag_id","in", form.data.tags.split(","));
             }
-
+            console.log(q)
             const products = await q.fetch({
                 withRelated:["category", "tags"]
             })
@@ -192,7 +191,7 @@ router.post('/:product_id/update', async function (req, res) {
     }
 
     //process the form
-    const productForm = createProductForm(allCategories,allTags);
+    const productForm = createProductForm(allCategories, allTags);
     productForm.handle(req, {
         "success": async function (form) {
             // product.set('name', form.data.name);

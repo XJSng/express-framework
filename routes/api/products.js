@@ -124,8 +124,8 @@ router.delete("/:productId", async (req, res) => {
             res.sendStatus(404)
         } else {
             await searchedProduct.destroy();
-            res.sendStatus(204)
-            // Status not sending back
+            console.log("Deleted")
+            res.sendStatus(200)
         }
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });

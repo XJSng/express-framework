@@ -73,6 +73,18 @@ app.use(function (err, req, res, next) {
     next()
   }
 })
+// middleware to share the csrf token with all hbs files
+app.use(function(req,res,next){
+  // for routes that are excluded from csrf, `req.csrfToken` will be undefined
+  // so we need to check for the existence of the function first for the other routes
+  if (req.csrfToken) {
+      // req.csrfToken() will return a valid CSRF token
+      // and we make it available to all hbs files via `res.locals.csrfToken`
+      res.locals.csrfToken = req.csrfToken();
+    }
+
+  next();
+})
 
 // enable routes
 const landingRoutes = require("./routes/landing.js")
@@ -93,7 +105,7 @@ async function main() {
 
 main();
 
-app.listen(2000, () => {
+app.listen(3000, () => {
   console.log("Server has started");
 });
 
