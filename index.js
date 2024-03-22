@@ -36,7 +36,7 @@ app.use(
 //enable sessions
 app.use(session({
   store: new FileStore,
-  secret: "keyboard cat",
+  secret: process.env.SESSION_SECRET,
   resave: false, // if a browser send a request and there is a valid session Id
   saveUninitialized: true // if the browser does not have a session, we will create one for the browser
 }))
