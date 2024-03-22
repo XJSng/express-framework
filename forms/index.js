@@ -46,7 +46,7 @@ const createProductForm = (categories = [], tags = []) => {
             cssClasses: {
                 label: ['form-label']
             },
-            validators: [validators.integer()]
+            validators: [validators.integer(), validators.min(0)]
         }),
         description: fields.string({
             required: true,

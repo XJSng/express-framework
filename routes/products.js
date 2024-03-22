@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const { Product} = require('../models');
+const { Product } = require('../models');
 const { createProductForm, bootstrapField, createSearchForm } = require('../forms');
 const { getAllTags, getAllCategories, getProductById, createProduct } = require('../dal/products');
-const { getProducts } = require('../service_layer/products');
+// const { mustBePositive } = require('../service_layer/products');
+
 
 
 router.get('/', async function (req, res) {
-      const allCategories = await getAllCategories()
+    const allCategories = await getAllCategories()
     // Added a new category to the array, in the front,
     // allowing users to not search for anything
     allCategories.unshift([0, "All Categories"])
@@ -39,11 +40,10 @@ router.get('/', async function (req, res) {
 
             if (form.data.tags && form.data.tags != "0") {
                 q.query("join", "products_tags", "products.id", "product_id")
-                .where("tag_id","in", form.data.tags.split(","));
+                    .where("tag_id", "in", form.data.tags.split(","));
             }
-            console.log(q)
             const products = await q.fetch({
-                withRelated:["category", "tags"]
+                withRelated: ["category", "tags"]
             })
             res.render("products/index", {
                 products: products.toJSON(),
@@ -160,6 +160,7 @@ router.get("/:product_id/update", async (req, res) => {
         productForm.fields.description.value = product.get('description')
         productForm.fields.category_id.value = product.get('category_id')
         productForm.fields.image_url.value = product.get("image_url")
+
         // Fill in the multi-select for the tags
         let selectedTags = await product.related("tags").pluck("id");
         productForm.fields.tags.value = selectedTags

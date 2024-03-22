@@ -2,10 +2,11 @@ const express = require("express")
 const router = express.Router()
 const productDataLayer = require("../../dal/products")
 const { createProductForm } = require("../../forms")
+const { getProducts } = require("../../service_layer/products")
 
 
 router.get("/", async (req, res) => {
-    const allProducts = await productDataLayer.getAllProducts()
+    const allProducts = await getProducts()
     res.json({
         "products": allProducts.toJSON()
     })
