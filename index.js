@@ -92,7 +92,9 @@ const productRoutes = require("./routes/products.js")
 const userRoute = require("./routes/users.js")
 const cloudinaryRoutes = require("./routes/cloudinary.js")
 
-const api = { products: require("./routes/api/products.js") }
+const api = { products: require("./routes/api/products.js"),
+              categories: require("./routes/api/categories.js"),
+            tags: require("./routes/api/tags.js") }
 
 async function main() {
   app.use("/", landingRoutes)
@@ -101,6 +103,8 @@ async function main() {
   app.use("/cloudinary", cloudinaryRoutes)
   // all routes are json
   app.use("/api/products", express.json(), api.products)
+  app.use("/api/categories", express.json(), api.categories)
+  app.use("/api/tags",express.json(), api.tags)
 }
 
 main();

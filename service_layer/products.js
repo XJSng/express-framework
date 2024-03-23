@@ -6,15 +6,6 @@ async function getProducts() {
 }
 
 // Product pricing must be postive
-async function mustBePositive(product){
-    if (product.cost < 0) {
-        req.flash("error_messages", "Product cost must be more than 0")
-        
-    } else {
-        
-    }
-
-}
 
 // Product SKU must be unique or something
 // The product price must be positive
