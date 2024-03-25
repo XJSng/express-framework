@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     JSON.stringify(unSortedTagsData, null, 2)
     const allTags = unSortedTagsData.tags
     res.json({
-        "Tags": allTags
+        "tags": allTags
     })
 })
 
