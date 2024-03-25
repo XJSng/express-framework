@@ -97,6 +97,7 @@ router.post('/create', async function (req, res) {
     // start the form processing
     productForm.handle(req, {
         "success": async function (form) {
+            console.log(form)
             // we want to extract the information
             // submitted in the form and create a new product
 

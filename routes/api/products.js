@@ -3,7 +3,7 @@ const router = express.Router()
 const productDataLayer = require("../../dal/products")
 const { createProductForm } = require("../../forms")
 const { getProducts } = require("../../service_layer/products")
-
+const cors = require("cors")
 
 router.get("/", async (req, res) => {
     const allProducts = await getProducts()
