@@ -5,9 +5,14 @@ async function getProducts() {
     return await productDataLayer.getAllProducts()
 }
 
-// Product pricing must be postive
-
-// Product SKU must be unique or something
 // The product price must be positive
+function mustbePositive(productCost){
+    if (productCost >= 0) {
+        next()
+    } else {
+        throw "Product cost must be positive!"
+    }
+}
 
-module.exports = { getProducts }
+
+module.exports = { getProducts, mustbePositive }
